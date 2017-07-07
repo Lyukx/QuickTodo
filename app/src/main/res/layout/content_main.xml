@@ -11,8 +11,8 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/todoList"
-        android:layout_width="752dp"
-        android:layout_height="871dp"
+        android:layout_width="584dp"
+        android:layout_height="807dp"
         tools:layout_editor_absoluteX="8dp"
         tools:layout_editor_absoluteY="8dp" />
 </android.support.constraint.ConstraintLayout>

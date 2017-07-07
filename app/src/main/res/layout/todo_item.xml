@@ -6,8 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
     android:orientation="horizontal"
-    card_view:cardBackgroundColor="@android:color/background_light"
-    card_view:cardCornerRadius="5dp">
+    card_view:cardBackgroundColor="@android:color/background_light">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="CheckBox"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+            android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
         <TextView
             android:id="@+id/description"
@@ -28,7 +27,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:paddingLeft="15dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="@android:color/black" />
 
         <TextView
             android:id="@+id/time"
@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:paddingRight="15dp"
-            android:textAlignment="textEnd"
+            android:textAlignment="viewEnd"
             android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
     </LinearLayout>
