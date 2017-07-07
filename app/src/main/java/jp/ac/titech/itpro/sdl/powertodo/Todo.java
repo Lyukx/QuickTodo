@@ -18,4 +18,11 @@ public class Todo {
         this.description = description;
         this.time = time;
     }
+
+    // Create a quick todoitem
+    public Todo(String title){
+        this.title = title;
+        this.description = "";
+        this.time = "";
+    }
 }

@@ -1,8 +1,11 @@
 package jp.ac.titech.itpro.sdl.powertodo;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +29,8 @@ public class MainActivity extends AppCompatActivity
     private RecyclerView todoList;
     private TodoAdapter todoAdapter;
     private List<Todo> todos = new ArrayList<Todo>();
+
+    final Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +43,19 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+                final EditText editText = new EditText(context);
+
+                alertDialogBuilder.setTitle("Create a new TODO")
+                        .setView(editText)
+                        .setPositiveButton("Apply", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Todo newTodo = new Todo(editText.getText().toString());
+                                todos.add(newTodo);
+                            }
+                        })
+                        .setNegativeButton("Cancel", null).show();
             }
         });
 
@@ -51,11 +68,6 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        // Test Code
-        Todo newTodo = new Todo("test1","test","test");
-        todos.add(newTodo);
-        Todo newTodo2 = new Todo("test2","test\ntest","test");
-        todos.add(newTodo2);
         // Get RecyclerView and set it up
         todoList = (RecyclerView) findViewById(R.id.todoList);
         todoList.setLayoutManager(new LinearLayoutManager(this));
