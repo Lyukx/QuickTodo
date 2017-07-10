@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 Todo newTodo = new Todo(editText.getText().toString());
-                                todos.add(newTodo);
+                                todoAdapter.addItem(newTodo);
                             }
                         })
                         .setNegativeButton("Cancel", null).show();
@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
 
         // Get RecyclerView and set it up
         todoList = (RecyclerView) findViewById(R.id.todoList);
@@ -103,7 +104,12 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_delete) {
-            return true;
+            // Remove the completed todos
+            for(int i = 0; i < todos.size(); i++){
+                if(todos.get(i).done){
+                    todoAdapter.removeItem(i);
+                }
+            }
         }
 
         return super.onOptionsItemSelected(item);

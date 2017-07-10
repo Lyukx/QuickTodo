@@ -10,13 +10,14 @@ public class Todo {
     public String title;
     public String description;
     public String time;
-    public boolean checked;
+    public boolean done;
 
     // Create a todoitem with description and date
     public Todo(String title, String description, String time){
         this.title = title;
         this.description = description;
         this.time = time;
+        this.done = false;
     }
 
     // Create a quick todoitem
@@ -24,5 +25,6 @@ public class Todo {
         this.title = title;
         this.description = "";
         this.time = "";
+        this.done = false;
     }
 }

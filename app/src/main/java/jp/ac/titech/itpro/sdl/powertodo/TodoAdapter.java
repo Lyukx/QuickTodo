@@ -30,16 +30,39 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.ViewHolder>{
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder viewHolder, int i){
-        Todo t = todos.get(i);
-        viewHolder.todoCheck.setText(t.title);
+    public void onBindViewHolder(final ViewHolder viewHolder, int i){
+        final Todo t = todos.get(i);
         viewHolder.description.setText(t.description);
         viewHolder.time.setText(t.time);
+
+        viewHolder.todoCheck.setText(t.title);
+        viewHolder.todoCheck.setChecked(t.done);
+        viewHolder.todoCheck.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(viewHolder.todoCheck.isChecked()){
+                    t.done = true;
+                }
+                else{
+                    t.done = false;
+                }
+            }
+        });
     }
 
     @Override
     public int getItemCount(){
         return todos == null ? 0 : todos.size();
+    }
+
+    public void addItem(Todo newTodo){
+        todos.add(newTodo);
+        notifyDataSetChanged();
+    }
+
+    public void removeItem(int deleteNum){
+        todos.remove(deleteNum);
+        notifyDataSetChanged();
     }
 
 
