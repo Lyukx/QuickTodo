@@ -1,5 +1,6 @@
 package jp.ac.titech.itpro.sdl.powertodo;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -23,8 +24,12 @@ public class Todo {
     // Create a quick todoitem
     public Todo(String title){
         this.title = title;
-        this.description = "";
-        this.time = "";
+        this.time = getTime();
         this.done = false;
+    }
+
+    private String getTime(){
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
+        return formatter.format(new java.util.Date());
     }
 }

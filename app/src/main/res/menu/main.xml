@@ -6,9 +6,4 @@
         android:icon="@android:drawable/ic_delete"
         android:title="@string/action_delete"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/search"
-        android:icon="@drawable/ic_search_black_24dp"
-        android:title="@string/action_search"
-        app:showAsAction="never" />
 </menu>

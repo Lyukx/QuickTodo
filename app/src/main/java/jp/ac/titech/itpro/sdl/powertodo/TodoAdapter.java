@@ -65,7 +65,6 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.ViewHolder>{
         notifyDataSetChanged();
     }
 
-
     public static class ViewHolder extends RecyclerView.ViewHolder{
         public CheckBox todoCheck;
         public TextView description;

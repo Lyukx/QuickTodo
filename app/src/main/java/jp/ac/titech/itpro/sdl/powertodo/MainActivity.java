@@ -9,6 +9,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -19,6 +20,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,15 +45,23 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-                final EditText editText = new EditText(context);
+                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+                //final EditText editTitle = new EditText(context);
+                //final EditText editDescription = new EditText(context);
+
+                LayoutInflater inflater = LayoutInflater.from(context);
+                final View v = inflater.inflate(R.layout.create_new_todo, null);
 
                 alertDialogBuilder.setTitle("Create a new TODO")
-                        .setView(editText)
+                        .setView(v)
                         .setPositiveButton("Apply", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                Todo newTodo = new Todo(editText.getText().toString());
+                                EditText editTitle = (EditText) v.findViewById(R.id.editTitle);
+                                EditText editDescription = (EditText) v.findViewById(R.id.editDescription);
+                                Todo newTodo = new Todo(editTitle.getText().toString());
+                                String description = editDescription.getText().toString();
+                                newTodo.description = description;
                                 todoAdapter.addItem(newTodo);
                             }
                         })
