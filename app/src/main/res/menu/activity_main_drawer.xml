@@ -7,7 +7,7 @@
             android:title="All TODO" />
         <item
             android:id="@+id/nav_quicktodo"
-            android:title="Quick Todo" />
+            android:title="Quick TODO" />
         <item
             android:id="@+id/nav_plan"
             android:title="Events" />

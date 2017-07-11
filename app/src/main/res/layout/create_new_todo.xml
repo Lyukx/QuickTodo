@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:hint="(*) Todo title"
+        android:hint="Todo title"
         android:inputType="text" />
 
     <EditText
@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:hint="Description"
+        android:hint="Description (optional)"
         android:inputType="text" />
 
     <RelativeLayout
