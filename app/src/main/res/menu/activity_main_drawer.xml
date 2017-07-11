@@ -17,10 +17,7 @@
         <menu>
             <item
                 android:id="@+id/nav_pull"
-                android:title="Pull" />
-            <item
-                android:id="@+id/nav_push"
-                android:title="Push" />
+                android:title="Synchronize" />
         </menu>
     </item>
 
