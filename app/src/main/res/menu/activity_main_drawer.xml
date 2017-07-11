@@ -10,7 +10,7 @@
             android:title="Quick Todo" />
         <item
             android:id="@+id/nav_plan"
-            android:title="Plans" />
+            android:title="Events" />
     </group>
 
     <item android:title="Google Calendar">

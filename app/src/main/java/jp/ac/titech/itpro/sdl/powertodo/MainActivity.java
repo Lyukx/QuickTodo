@@ -34,6 +34,7 @@ import android.view.MenuItem;
 import android.widget.DatePicker;
 import android.widget.DatePicker.OnDateChangedListener;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -71,6 +72,7 @@ public class MainActivity extends AppCompatActivity
     private List<Todo> todos = new ArrayList<Todo>();
 
     private Set<String> pulledTodos = new HashSet<String>();
+    private List<Todo> tempTodos = new ArrayList<Todo>();
 
     final Context context = this;
 
@@ -102,6 +104,7 @@ public class MainActivity extends AppCompatActivity
                 LayoutInflater inflater = LayoutInflater.from(context);
                 final View v = inflater.inflate(R.layout.create_new_todo, null);
 
+
                 alertDialogBuilder.setTitle("Create a new TODO")
                         .setView(v)
                         .setPositiveButton("Apply", new DialogInterface.OnClickListener() {
@@ -110,7 +113,14 @@ public class MainActivity extends AppCompatActivity
                                 EditText editTitle = (EditText) v.findViewById(R.id.editTitle);
                                 EditText editDescription = (EditText) v.findViewById(R.id.editDescription);
                                 DatePicker dp = (DatePicker) v.findViewById(R.id.datePicker);
-                                String date = "" + dp.getYear() + "/" + (dp.getMonth() + 1) + "/" + dp.getDayOfMonth();
+
+                                int month = dp.getMonth() + 1;
+                                String monthStr = "" + ((month >= 10) ? month : ("0" + month));
+
+                                int day = dp.getDayOfMonth();
+                                String dayStr = "" + ((day >= 10) ? day : ("0" + day));
+
+                                String date = "" + dp.getYear() + "/" + monthStr + "/" + dayStr;
                                 String description = editDescription.getText().toString();
 
                                 Todo newTodo = new Todo(editTitle.getText().toString(), description, date);
@@ -318,12 +328,24 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_delete) {
-            // Remove the completed todos
-            for(int i = 0; i < todos.size(); i++){
-                if(todos.get(i).done){
-                    todoAdapter.removeItem(i);
-                }
-            }
+            AlertDialog.Builder adb = new AlertDialog.Builder(context);
+            adb.setTitle("Delete TODOs")
+                    .setMessage("Are you sure to delete completed TODOs?")
+                    .setPositiveButton("Apply", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            // Remove the completed todos
+                            for(int j = 0; j < todos.size(); j++){
+                                if(todos.get(j).done){
+                                    String temp = todos.get(j).title + todos.get(j).description + todos.get(j).time;
+                                    pulledTodos.remove(temp);
+                                    todoAdapter.removeItem(j);
+                                    j--;
+                                }
+                            }
+                        }
+                    })
+                    .setNegativeButton("Cancel", null).show();
         }
 
         return super.onOptionsItemSelected(item);
@@ -336,11 +358,40 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_all) {
-            // Handle the camera action
+            if(tempTodos.size() > 0){
+                while(tempTodos.size() != 0){
+                    Todo temp = tempTodos.remove(0);
+                    todoAdapter.addItem(temp);
+                }
+            }
         } else if (id == R.id.nav_quicktodo) {
-            Toast.makeText(context, "test toast", Toast.LENGTH_LONG).show();
+            if(tempTodos.size() > 0){
+                while(tempTodos.size() != 0){
+                    Todo temp = tempTodos.remove(0);
+                    todoAdapter.addItem(temp);
+                }
+            }
+            for(int i = 0; i < todos.size(); i++){
+                if(todos.get(i).description.length() > 0){
+                    tempTodos.add(todos.get(i));
+                }
+            }
+            for(int i = 0; i < tempTodos.size(); i++)
+                todoAdapter.removeItem(tempTodos.get(i));
         } else if (id == R.id.nav_plan) {
-
+            if(tempTodos.size() > 0){
+                while(tempTodos.size() != 0){
+                    Todo temp = tempTodos.remove(0);
+                    todoAdapter.addItem(temp);
+                }
+            }
+            for(int i = 0; i < todos.size(); i++){
+                if(todos.get(i).description.length() == 0){
+                    tempTodos.add(todos.get(i));
+                }
+            }
+            for(int i = 0; i < tempTodos.size(); i++)
+                todoAdapter.removeItem(tempTodos.get(i));
         } else if (id == R.id.nav_pull) {
             getResultsFromApi();
         }

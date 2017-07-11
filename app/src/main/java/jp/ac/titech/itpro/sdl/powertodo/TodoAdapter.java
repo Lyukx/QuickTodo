@@ -42,9 +42,12 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.ViewHolder>{
             public void onClick(View v) {
                 if(viewHolder.todoCheck.isChecked()){
                     t.done = true;
+                    moveCheckedItemToEnd(t);
                 }
                 else{
                     t.done = false;
+                    todos.remove(t);
+                    addItem(t);
                 }
             }
         });
@@ -76,8 +79,25 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.ViewHolder>{
         notifyDataSetChanged();
     }
 
-    public void removeItem(int deleteNum){
+    public Todo removeItem(int deleteNum){
+        Todo deleted = todos.get(deleteNum);
         todos.remove(deleteNum);
+        notifyDataSetChanged();
+
+        return deleted;
+    }
+
+    public Todo removeItem(Todo deleteItem){
+        todos.remove(deleteItem);
+        notifyDataSetChanged();;
+        return deleteItem;
+    }
+
+    public void moveCheckedItemToEnd(Todo checkedItem){
+        Todo temp = checkedItem;
+        todos.remove(checkedItem);
+        temp.done = true;
+        todos.add(temp);
         notifyDataSetChanged();
     }
 
