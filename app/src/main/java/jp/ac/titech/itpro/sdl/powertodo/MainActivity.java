@@ -31,6 +31,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.DatePicker;
+import android.widget.DatePicker.OnDateChangedListener;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -50,8 +52,10 @@ import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.Events;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -105,9 +109,12 @@ public class MainActivity extends AppCompatActivity
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 EditText editTitle = (EditText) v.findViewById(R.id.editTitle);
                                 EditText editDescription = (EditText) v.findViewById(R.id.editDescription);
-                                Todo newTodo = new Todo(editTitle.getText().toString());
+                                DatePicker dp = (DatePicker) v.findViewById(R.id.datePicker);
+                                String date = "" + dp.getYear() + "/" + (dp.getMonth() + 1) + "/" + dp.getDayOfMonth();
                                 String description = editDescription.getText().toString();
-                                newTodo.description = description;
+
+                                Todo newTodo = new Todo(editTitle.getText().toString(), description, date);
+
                                 todoAdapter.addItem(newTodo);
                             }
                         })
