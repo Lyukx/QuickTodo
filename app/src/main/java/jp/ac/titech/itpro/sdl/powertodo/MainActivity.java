@@ -52,7 +52,9 @@ import com.google.api.services.calendar.model.Events;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -64,6 +66,8 @@ public class MainActivity extends AppCompatActivity
     private TodoAdapter todoAdapter;
     private List<Todo> todos = new ArrayList<Todo>();
 
+    private Set<String> pulledTodos = new HashSet<String>();
+
     final Context context = this;
 
     // Parameter list for google calendar API
@@ -72,7 +76,6 @@ public class MainActivity extends AppCompatActivity
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
     static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
 
-    private static final String BUTTON_TEXT = "Call Google Calendar API";
     private static final String PREF_ACCOUNT_NAME = "accountName";
     private static final String[] SCOPES = { CalendarScopes.CALENDAR_READONLY };
 
@@ -91,8 +94,6 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-                //final EditText editTitle = new EditText(context);
-                //final EditText editDescription = new EditText(context);
 
                 LayoutInflater inflater = LayoutInflater.from(context);
                 final View v = inflater.inflate(R.layout.create_new_todo, null);
@@ -398,7 +399,13 @@ public class MainActivity extends AppCompatActivity
                 String finalDescription = "";
                 finalDescription += (description == null) ? "" : description;
                 finalDescription += (location == null) ? "" : ((description == null) ? location : ("\n" + location));
-                eventTodos.add(new Todo(title, finalDescription, date));
+
+                Todo newTodo = new Todo(title, finalDescription, date);
+                String pulled = title + finalDescription + date;
+                if(!pulledTodos.contains(pulled)) {
+                    pulledTodos.add(pulled);
+                    eventTodos.add(newTodo);
+                }
             }
             return eventTodos;
         }
