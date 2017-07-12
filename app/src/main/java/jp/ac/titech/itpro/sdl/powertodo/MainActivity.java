@@ -4,14 +4,18 @@ import android.Manifest;
 import android.accounts.AccountManager;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -39,6 +43,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.BooleanResult;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
@@ -75,6 +80,7 @@ public class MainActivity extends AppCompatActivity
     private List<Todo> tempTodos = new ArrayList<Todo>();
 
     final Context context = this;
+    private QuickTodoDBHelper quickTodoDBHelper = new QuickTodoDBHelper(context);
 
     // Parameter list for google calendar API
     static final int REQUEST_ACCOUNT_PICKER = 1000;
@@ -126,6 +132,7 @@ public class MainActivity extends AppCompatActivity
                                 Todo newTodo = new Todo(editTitle.getText().toString(), description, date);
 
                                 todoAdapter.addItem(newTodo);
+                                insertIntoDB(newTodo);
                             }
                         })
                         .setNegativeButton("Cancel", null).show();
@@ -147,6 +154,26 @@ public class MainActivity extends AppCompatActivity
         todoList.setLayoutManager(new LinearLayoutManager(this));
         todoList.setItemAnimator(new DefaultItemAnimator());
         // Initial the adapter and assign it to 'todoList'
+        if(savedInstanceState != null){
+            List<String> titleList = savedInstanceState.getStringArrayList("titleList");
+            List<String> descriptionList = savedInstanceState.getStringArrayList("descriptionList");
+            List<String> timeList = savedInstanceState.getStringArrayList("timeList");
+            List<Integer> doneList = savedInstanceState.getIntegerArrayList("doneList");
+            for(int i = 0; i < titleList.size(); i++){
+                Todo newTodo = new Todo(titleList.get(i), descriptionList.get(i), timeList.get(i));
+                newTodo.done = (doneList.get(i) == 1);
+                todos.add(newTodo);
+            }
+        }
+        else{
+            List<Todo> fromDB = getTodoFromDB();
+            if(fromDB.size() > 0) {
+                todos = fromDB;
+                for(Todo todo : todos){
+                    pulledTodos.add(todo.title + todo.description + todo.time);
+                }
+            }
+        }
         todoAdapter = new TodoAdapter(this, todos);
         todoList.setAdapter(todoAdapter);
 
@@ -156,6 +183,108 @@ public class MainActivity extends AppCompatActivity
 
         mCredential = GoogleAccountCredential.usingOAuth2(
                 getApplicationContext(), Arrays.asList(SCOPES)).setBackOff(new ExponentialBackOff());
+    }
+    /**
+     * This is the segment to handle database events
+     */
+    private long insertIntoDB(Todo todo){
+        SQLiteDatabase db = quickTodoDBHelper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(TodoEntry.COLUMN_NAME_TITLE, todo.title);
+        values.put(TodoEntry.COLUMN_NAME_DESCRIPTION, todo.description);
+        values.put(TodoEntry.COLUMN_NAME_TIME, todo.time);
+        values.put(TodoEntry.COLUMN_NAME_DONE, todo.done ? 1 : 0);
+
+        long newRowId = db.insert(TodoEntry.TABLE_NAME, null, values);
+        return newRowId;
+    }
+
+    private void deleteFromDB(Todo todo){
+        SQLiteDatabase db = quickTodoDBHelper.getWritableDatabase();
+        String selection = TodoEntry.COLUMN_NAME_TITLE + " = ? AND " +
+                TodoEntry.COLUMN_NAME_DESCRIPTION + " = ? AND " +
+                TodoEntry.COLUMN_NAME_TIME + " = ?";
+        String[] selectionArgs = {todo.title, todo.description, todo.time};
+        db.delete(TodoEntry.TABLE_NAME, selection, selectionArgs);
+    }
+
+    private List<Todo> getTodoFromDB(){
+        SQLiteDatabase db = quickTodoDBHelper.getReadableDatabase();
+        List<Todo> result = new ArrayList<Todo>();
+        String[] projection = {
+            TodoEntry._ID,
+            TodoEntry.COLUMN_NAME_TITLE,
+            TodoEntry.COLUMN_NAME_DESCRIPTION,
+            TodoEntry.COLUMN_NAME_TIME,
+            TodoEntry.COLUMN_NAME_DONE
+        };
+
+        Cursor cursor = db.query(
+            TodoEntry.TABLE_NAME,
+            projection,
+            null,
+            null,
+            null,
+            null,
+            null
+        );
+        while (cursor.moveToNext()){
+            String title = cursor.getString(cursor.getColumnIndex(TodoEntry.COLUMN_NAME_TITLE));
+            String description = cursor.getString(cursor.getColumnIndex(TodoEntry.COLUMN_NAME_DESCRIPTION));
+            String time = cursor.getString(cursor.getColumnIndex(TodoEntry.COLUMN_NAME_TIME));
+
+            Todo newTodo = new Todo(title, description, time);
+            newTodo.done = (cursor.getInt(cursor.getColumnIndex(TodoEntry.COLUMN_NAME_DONE)) == 1);
+            result.add(newTodo);
+        }
+
+        return result;
+    }
+    /**
+     * This is the segment to enable kaiten
+     */
+    @Override
+    protected void onResume(){
+        super.onResume();
+    }
+
+    private ArrayList<String> getTitleList(List<Todo> todoList){
+        ArrayList<String> result = new ArrayList<String>();
+        for(Todo todo : todoList)
+            result.add(todo.title);
+        return result;
+    }
+
+    private ArrayList<String> getDescriptionList(List<Todo> todoList){
+        ArrayList<String> result = new ArrayList<String>();
+        for(Todo todo : todoList)
+            result.add(todo.description);
+        return result;
+    }
+
+    private ArrayList<String> getTimeList(List<Todo> todoList){
+        ArrayList<String> result = new ArrayList<String>();
+        for(Todo todo : todoList)
+            result.add(todo.time);
+        return result;
+    }
+
+    private ArrayList<Integer> getDoneList(List<Todo> todoList){
+        ArrayList<Integer> result = new ArrayList<Integer>();
+        for(Todo todo : todoList)
+            result.add((todo.done) ? 1 : 0);
+        return result;
+    }
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState){
+        super.onSaveInstanceState(outState);
+        outState.putStringArrayList("titleList", getTitleList(todos));
+        outState.putStringArrayList("descriptionList", getDescriptionList(todos));
+        outState.putStringArrayList("timeList", getTimeList(todos));
+        outState.putIntegerArrayList("doneList", getDoneList(todos));
     }
 
     /**
@@ -338,6 +467,7 @@ public class MainActivity extends AppCompatActivity
                             for(int j = 0; j < todos.size(); j++){
                                 if(todos.get(j).done){
                                     String temp = todos.get(j).title + todos.get(j).description + todos.get(j).time;
+                                    deleteFromDB(todos.get(j));
                                     pulledTodos.remove(temp);
                                     todoAdapter.removeItem(j);
                                     j--;
@@ -484,9 +614,8 @@ public class MainActivity extends AppCompatActivity
                 Toast.makeText(context, "Synchronize succeed!", Toast.LENGTH_LONG).show();
                 for(Todo todo : output){
                     todoAdapter.addItem(todo);
+                    insertIntoDB(todo);
                 }
-                //output.add(0, "Data retrieved using the Google Calendar API:");
-                //todos.add(new Todo(TextUtils.join("\n", output)));
             }
         }
 

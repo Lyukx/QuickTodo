@@ -58,24 +58,30 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.ViewHolder>{
         return todos == null ? 0 : todos.size();
     }
 
-    public void addItem(Todo newTodo){
+    private int getInsertPos(Todo newTodo){
+        int result = 0;
         // If null
         if(todos == null || todos.size() == 0){
-            todos.add(0, newTodo);
+            return result;
         }
         else{
             boolean flag = false;
             for(int i = 0; i < todos.size(); i++){
                 if(todos.get(i).time.compareTo(newTodo.time) >= 0){
-                    todos.add(i, newTodo);
+                    result = i;
                     flag = true;
                     break;
                 }
             }
             if(!flag){
-                todos.add(newTodo);
+                result = todos.size();
             }
         }
+        return result;
+    }
+    public void addItem(Todo newTodo){
+        // If null
+        todos.add(getInsertPos(newTodo), newTodo);
         notifyDataSetChanged();
     }
 

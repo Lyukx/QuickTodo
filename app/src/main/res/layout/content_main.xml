@@ -4,15 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    android:paddingTop="75dp"
     tools:context="jp.ac.titech.itpro.sdl.powertodo.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/todoList"
-        android:layout_width="752dp"
-        android:layout_height="871dp"
-        tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="8dp" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 </android.support.constraint.ConstraintLayout>
